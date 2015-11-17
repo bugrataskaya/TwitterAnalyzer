@@ -22,7 +22,7 @@ import com.mongodb.client.MongoDatabase;
  * Hello world!
  *
  */
-public class App 
+public class Test 
 {
     public static void main( String[] args )
     {
@@ -44,13 +44,31 @@ public class App
 		
 		Twitter twitter = new TwitterFactory(cb.build()).getInstance();
 
-		try {
-            Query query = new Query("seçim");
+		/* Query query = new Query("seçim");
             query.setCount(1000);
             QueryResult result;
             result = twitter.search(query);
             System.out.println("Getting Tweets...");
-            List<Status> tweets = result.getTweets();
+            List<Status> tweets = result.getTweets();*/
+			int pageno = 1;
+			String user = "Cihan_Haber";
+			List<Status> tweets = new ArrayList();
+			
+			while (true) {
+
+				  try {
+
+				    int size = tweets.size(); 
+				    Paging page = new Paging(pageno++, 100);
+				    tweets.addAll(twitter.getUserTimeline(user, page));
+				    if (tweets.size() == size)
+				      break;
+				  }
+				  catch(TwitterException e) {
+
+				    e.printStackTrace();
+				  }
+				}
 
             for (Status tweet : tweets) {
                 Document basicObj = new Document();
@@ -73,19 +91,7 @@ public class App
                     //loadMenu();
                 }
             }
-            System.out.println("We got'em");
-
-        } catch (TwitterException te) {
-            System.out.println("te.getErrorCode() " + te.getErrorCode());
-            System.out.println("te.getExceptionCode() " + te.getExceptionCode());
-            System.out.println("te.getStatusCode() " + te.getStatusCode());
-            if (te.getStatusCode() == 401) {
-                System.out.println("Twitter Error : nAuthentication credentials (https://dev.twitter.com/pages/auth) were missing or incorrect.nEnsure that you have set valid consumer key/secret, access token/secret, and the system clock is in sync.");
-            } else {
-                System.out.println("Twitter Error : " + te.getMessage());
-            }
-
-        }	       
+            System.out.println("We got'em");	       
 		
         
 }
